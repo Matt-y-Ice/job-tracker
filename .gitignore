@@ -1,0 +1,14 @@
+# Personal data: never commit or bundle
+resume/*
+!resume/.gitkeep
+config/preferences.json
+config/api_keys.json
+config/skill_catalog.json
+data/
+output/
+logs/
+
+# Python / environment
+.venv/
+__pycache__/
+*.pyc

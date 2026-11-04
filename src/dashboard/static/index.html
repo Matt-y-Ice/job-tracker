@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Job Tracker</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Job Tracker</h1>
+      <p id="counts" class="muted">Loading jobs…</p>
+    </div>
+    <button id="refresh-btn" class="primary" type="button">Refresh jobs</button>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <section id="refresh-panel" class="card refresh" hidden>
+    <div class="refresh-head">
+      <strong id="refresh-title">Refreshing jobs…</strong>
+      <button id="refresh-close" class="link" type="button">Hide</button>
+    </div>
+    <pre id="refresh-log"></pre>
+    <div id="refresh-progress" class="progress-line"></div>
+  </section>
+
+  <section class="controls card">
+    <label class="grow">Search
+      <input id="f-search" type="search" placeholder="Title, company, location, notes">
+    </label>
+    <label>Status
+      <select id="f-status"><option value="">All</option></select>
+    </label>
+    <label>Score
+      <span class="range">
+        <input id="f-min" type="number" min="0" max="100" value="0" aria-label="Minimum score">
+        <span>to</span>
+        <input id="f-max" type="number" min="0" max="100" value="100" aria-label="Maximum score">
+      </span>
+    </label>
+    <label>Source
+      <select id="f-source"><option value="">All</option></select>
+    </label>
+    <div class="toggles">
+      <label class="check"><input id="f-low" type="checkbox"> Show Low Matches</label>
+      <label class="check"><input id="f-unsure" type="checkbox" checked> Show Unsure Location</label>
+    </div>
+  </section>
+
+  <section class="charts">
+    <div class="card"><h2>Jobs by status</h2><svg id="chart-status" role="img" aria-label="Jobs by status"></svg></div>
+    <div class="card"><h2>Score distribution</h2><svg id="chart-scores" role="img" aria-label="Score distribution"></svg></div>
+  </section>
+
+  <section class="card table-card">
+    <p id="showing" class="muted"></p>
+    <div class="table-wrap">
+      <table id="jobs">
+        <thead>
+          <tr>
+            <th class="narrow" aria-label="Details"></th>
+            <th data-sort="score" class="num">Score</th>
+            <th data-sort="title">Title</th>
+            <th data-sort="company">Company</th>
+            <th data-sort="location">Location</th>
+            <th data-sort="salary">Salary</th>
+            <th data-sort="source">Source</th>
+            <th data-sort="date_posted">Posted</th>
+            <th data-sort="status">Status</th>
+            <th data-sort="date_applied">Date Applied</th>
+            <th>Notes</th>
+            <th>Documents</th>
+            <th data-sort="sheet">List</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p id="empty" class="muted empty" hidden>No jobs match these filters.</p>
+  </section>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "_how_to_use": "Optional. Copy this file to api_keys.json and fill in free keys for the sources you want. A source turns on by itself once its key is filled in. Leave a source blank to keep it off. api_keys.json is never committed or shared.",
+  "adzuna":   { "app_id": "", "app_key": "" },
+  "usajobs":  { "email": "", "api_key": "" },
+  "jooble":   { "api_key": "" },
+  "findwork": { "api_key": "" }
+}

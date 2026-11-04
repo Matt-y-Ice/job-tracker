@@ -1,0 +1,26 @@
+{
+  "llm": {
+    "provider": "ollama",
+    "model": "qwen2.5:14b",
+    "host": "http://localhost:11434",
+    "temperature": 0.1,
+    "num_ctx": 8192,
+    "max_description_chars": 6000
+  },
+  "embedding": {
+    "provider": "ollama",
+    "model": "nomic-embed-text"
+  },
+  "documents": {
+    "model": "qwen2.5:32b",
+    "temperature": 0.4,
+    "num_ctx": 8192,
+    "max_description_chars": 5000,
+    "keep_alive": "5m"
+  },
+  "_notes": {
+    "llm": "Any model from https://ollama.com/library works. qwen2.5:14b needs about 10 GB of GPU memory. Higher quality options for a strong GPU: qwen2.5:32b (about 20 GB) and llama3.1:70b (about 43 GB). For slower machines try qwen2.5:7b.",
+    "documents": "Writes tailored resumes and cover letters (dashboard: Generate Documents). A larger model writes better; qwen2.5:32b needs about 21 GB of GPU memory. On smaller cards use qwen2.5:14b here too. keep_alive frees its memory a few minutes after the last document.",
+    "embedding": "provider 'ollama' with model 'nomic-embed-text' needs no extra Python packages. provider 'sentence-transformers' with model 'BAAI/bge-large-en-v1.5' is slightly more accurate but needs PyTorch (a large download)."
+  }
+}

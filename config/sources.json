@@ -1,0 +1,118 @@
+{
+  "keywords": [
+    "software engineer",
+    "software developer",
+    "backend engineer",
+    "backend developer",
+    "full stack engineer",
+    "full stack developer",
+    "python developer",
+    "python engineer",
+    "application developer",
+    "platform engineer"
+  ],
+  "include_target_titles": true,
+  "default_days_back": 25,
+  "request_delay_seconds": 1.5,
+
+  "sources": {
+    "remoteok":       { "enabled": true },
+    "remotive":       { "enabled": true, "categories": ["software-dev"], "min_refresh_hours": 6 },
+    "weworkremotely": { "enabled": true, "feeds": ["remote-programming-jobs", "remote-back-end-programming-jobs", "remote-full-stack-programming-jobs"] },
+    "arbeitnow":      { "enabled": true, "pages": 2 },
+    "himalayas":      { "enabled": true, "max_pages_per_keyword": 2 },
+    "jobicy":         { "enabled": true, "industries": ["engineering"], "geo": "" },
+    "themuse":        { "enabled": true, "categories": ["Software Engineering"], "location": "Flexible / Remote", "max_pages": 10 },
+    "jobyap":         { "enabled": true, "work_mode": "remote", "location": "country-US", "max_pages_per_keyword": 3, "max_details": 120 },
+    "parlel":         { "enabled": true, "remote": "remote", "max_pages_per_keyword": 2, "max_details": 60 },
+    "aidevjobs":      { "enabled": false },
+
+    "adzuna":   { "country": "us", "what_or": "remote", "max_pages_per_keyword": 1 },
+    "usajobs":  { },
+    "jooble":   { "location": "Remote" },
+    "findwork": { },
+
+    "greenhouse": {
+      "enabled": true,
+      "request_delay_seconds": 1.0,
+      "companies": {
+        "affirm": "Affirm",
+        "reddit": "Reddit",
+        "gitlab": "GitLab",
+        "pindropsecurity": "Pindrop",
+        "beyondtrust": "BeyondTrust",
+        "abacusinsights": "Abacus Insights",
+        "bluelabsanalyticsinc": "BlueLabs Analytics",
+        "diligentrobotics": "Diligent Robotics",
+        "10alabs": "10a Labs",
+        "abnormalsecurity": "Abnormal Security",
+        "datadog": "Datadog",
+        "coinbase": "Coinbase",
+        "samsara": "Samsara",
+        "toast": "Toast",
+        "pinterest": "Pinterest",
+        "stripe": "Stripe",
+        "squarespace": "Squarespace",
+        "netlify": "Netlify",
+        "airbnb": "Airbnb",
+        "canonical": "Canonical",
+        "huntress": "Huntress",
+        "planetscale": "PlanetScale",
+        "lithic": "Lithic",
+        "syndio": "Syndio",
+        "tebra": "Tebra",
+        "smartling": "Smartling",
+        "dremio": "Dremio",
+        "prizepicks": "PrizePicks",
+        "pantheon": "Pantheon",
+        "torcrobotics": "Torc Robotics",
+        "motional": "Motional",
+        "cloverhealth": "Clover Health",
+        "oportun": "Oportun",
+        "vercel": "Vercel",
+        "grafanalabs": "Grafana Labs",
+        "cloudflare": "Cloudflare",
+        "mongodb": "MongoDB",
+        "elastic": "Elastic",
+        "dropbox": "Dropbox",
+        "figma": "Figma",
+        "brex": "Brex",
+        "gusto": "Gusto",
+        "asana": "Asana",
+        "twilio": "Twilio",
+        "okta": "Okta",
+        "duolingo": "Duolingo",
+        "discord": "Discord",
+        "robinhood": "Robinhood"
+      }
+    },
+    "lever": {
+      "enabled": true,
+      "companies": {
+        "captivateiq": "CaptivateIQ",
+        "crowdhealth": "CrowdHealth",
+        "nextech": "Nextech"
+      }
+    },
+    "ashby": {
+      "enabled": true,
+      "companies": {
+        "supabase": "Supabase",
+        "clickup": "ClickUp",
+        "socket": "Socket",
+        "onebrief": "Onebrief",
+        "scribe": "Scribe",
+        "elevenlabs": "ElevenLabs",
+        "sentry": "Sentry",
+        "posthog": "PostHog",
+        "zapier": "Zapier",
+        "notion": "Notion",
+        "linear": "Linear",
+        "ramp": "Ramp",
+        "plaid": "Plaid",
+        "webflow": "Webflow",
+        "quora": "Quora"
+      }
+    }
+  }
+}

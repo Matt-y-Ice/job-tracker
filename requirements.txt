@@ -1,0 +1,7 @@
+pypdf>=4.0
+python-docx>=1.1
+requests>=2.31
+tqdm>=4.66
+openpyxl>=3.1
+flask>=3.0
+filelock>=3.13

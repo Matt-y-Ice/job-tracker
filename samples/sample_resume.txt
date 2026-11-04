@@ -1,0 +1,34 @@
+Jordan Rivera
+Backend Developer
+Austin, TX | jordan.rivera@example.com | github.com/jrivera-example
+
+Professional Summary
+Backend developer with 5+ years of experience building REST APIs and data services in Python and Go.
+Comfortable owning services end to end, from schema design to CI/CD and on-call.
+
+Skills
+Languages: Python, Go, TypeScript, SQL, Bash
+Frameworks: Django, FastAPI, React
+Data: PostgreSQL, Redis, Kafka, Apache Airflow
+Cloud and DevOps: AWS (ECS, RDS), Docker, Kubernetes, Terraform, GitHub Actions
+Practices: Test-driven development, code review, observability with Grafana and Prometheus
+
+Work Experience
+Backend Developer | Brightwave Analytics | Jan 2021 – Present
+- Designed and maintained 12 FastAPI microservices handling 40M requests per day.
+- Moved batch jobs from cron to Airflow, cutting failed nightly runs by 80%.
+- Wrote pytest suites that raised coverage from 45% to 88%.
+
+Software Engineer Intern, Globex Corporation — 05/2019 - 08/2019
+- Built a Django admin tool for support staff and integrated it with the Zendesk API.
+
+IT Support Technician
+Initech Services
+2016 - 2018
+- Managed 300 Windows laptops and wrote PowerShell scripts to automate onboarding.
+
+Education
+B.S. Computer Science, University of Texas at Austin, 2020
+
+Projects
+Budget Tracker (2022 - 2023) - personal Flask app with SQLite and Chart.js
