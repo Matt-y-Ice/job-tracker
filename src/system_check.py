@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .config import load_models
+from .platform_text import setup_hint
 
 OLLAMA_DOWNLOAD = "https://ollama.com/download"
 EXIT_NO_OLLAMA = 3  # setup.bat treats this as "stop cleanly, nothing broken"
@@ -87,13 +88,34 @@ def windows_gpus() -> list[Gpu]:
     return gpus
 
 
+def apple_silicon_gpu() -> Gpu | None:
+    """Unified memory, via sysctl. None on Intel Macs and everywhere else."""
+    if sys.platform != "darwin":
+        return None
+    try:
+        machine = os.uname().machine
+    except AttributeError:
+        return None
+    if machine != "arm64":
+        return None
+    vram = None
+    try:
+        out = subprocess.run(["sysctl", "-n", "hw.memsize"], capture_output=True,
+                             text=True, timeout=5, check=True).stdout
+        vram = round(int(out.strip()) / 1024**3, 1)
+    except (OSError, subprocess.SubprocessError, ValueError):
+        vram = None
+    return Gpu("Apple Silicon", "Apple", vram, True)
+
+
 def detect_gpus() -> list[Gpu]:
     """All GPUs found, best candidates for Ollama first."""
     found = {g.name: g for g in windows_gpus()}
     for gpu in nvidia_gpus():  # nvidia-smi has the most accurate memory figure
         found[gpu.name] = gpu
-    if sys.platform == "darwin" and os.uname().machine == "arm64":
-        found["Apple Silicon"] = Gpu("Apple Silicon", "Apple", None, True)
+    apple = apple_silicon_gpu()
+    if apple:
+        found[apple.name] = apple
     return sorted(found.values(), key=lambda g: (not g.ollama_can_use, -(g.vram_gb or 0)))
 
 
@@ -133,12 +155,25 @@ def gpu_report(model: str) -> tuple[str, list[str]]:
 # ---------------------------------------------------------------- Ollama
 
 def find_ollama() -> str | None:
-    """Path to the ollama executable, checking PATH and the default Windows install folder."""
+    """Path to the ollama executable, checking PATH and the default install folder."""
     path = shutil.which("ollama")
     if path:
         return path
     default = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Ollama" / "ollama.exe"
-    return str(default) if default.exists() else None
+    if default.exists():
+        return str(default)
+    if sys.platform != "darwin":
+        return None
+    mac_candidates = [
+        Path("/Applications/Ollama.app/Contents/Resources/ollama"),
+        Path.home() / "Applications/Ollama.app/Contents/Resources/ollama",
+        Path("/usr/local/bin/ollama"),
+        Path("/opt/homebrew/bin/ollama"),
+    ]
+    for candidate in mac_candidates:
+        if candidate.exists():
+            return str(candidate)
+    return None
 
 
 def ollama_running(host: str) -> bool:
@@ -151,12 +186,18 @@ def ollama_running(host: str) -> bool:
 
 
 def start_ollama(exe: str, host: str, wait_seconds: int = 20) -> bool:
-    """Start `ollama serve` in the background and wait until it answers."""
-    flags = 0
+    """Start the Ollama server in the background and wait until it answers."""
     if sys.platform == "win32":
         flags = subprocess.CREATE_NO_WINDOW | subprocess.DETACHED_PROCESS
-    subprocess.Popen([exe, "serve"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                     creationflags=flags)
+        subprocess.Popen([exe, "serve"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         creationflags=flags)
+    elif sys.platform == "darwin" and (
+        Path("/Applications/Ollama.app").exists() or (Path.home() / "Applications/Ollama.app").exists()
+    ):
+        subprocess.Popen(["open", "-a", "Ollama"])
+    else:
+        subprocess.Popen([exe, "serve"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         start_new_session=True)
     deadline = time.time() + wait_seconds
     while time.time() < deadline:
         if ollama_running(host):
@@ -203,7 +244,7 @@ def print_install_help() -> None:
     print()
     print(f"  1. Download it from {OLLAMA_DOWNLOAD}")
     print("  2. Run the installer and keep the defaults.")
-    print("  3. Run setup.bat again. It will download the models for you.")
+    print(f"  3. Run {setup_hint()} again. It will download the models for you.")
 
 
 def setup_ollama() -> int:
@@ -217,8 +258,11 @@ def setup_ollama() -> int:
     if not ollama_running(host):
         print("Starting the Ollama server...")
         if not start_ollama(exe, host):
-            print("Could not start Ollama. Open the Ollama app from the Start menu, "
-                  "then run setup.bat again.")
+            if sys.platform == "win32":
+                print("Could not start Ollama. Open the Ollama app from the Start menu, "
+                      "then run setup.bat again.")
+            else:
+                print(f"Could not start Ollama. Open the Ollama app, then run {setup_hint()} again.")
             return 1
     have = installed_models(host)
     writer = load_models()["documents"]["model"]
@@ -234,7 +278,7 @@ def setup_ollama() -> int:
         print(f"Model {name}: downloading{size}. This can take a while...")
         if subprocess.run([exe, "pull", name]).returncode != 0:
             print(f"Download of {name} failed. Check your internet connection and the model "
-                  f"name in config/models.json, then run setup.bat again.")
+                  f"name in config/models.json, then run {setup_hint()} again.")
             return 1
     print("All models are ready.")
     return 0
