@@ -41,6 +41,33 @@ The first time you open `Job Tracker.app` or a `.command` file from a downloaded
 refuse it. Right-click the file and choose **Open**, then Open again. A git clone does not need
 that. Do not turn off Gatekeeper.
 
+## On a Mac
+
+Windows steps above still work. A Mac does not use the `.bat` files.
+
+Double-click **`Job Tracker.app`**. It asks what to do:
+
+| Choice | What it opens |
+|---|---|
+| Set up | `setup.command` |
+| Find and rank jobs | `run.command` |
+| Open dashboard | `dashboard.command` |
+| Reset this copy | `scrub.command`. It asks you to type `SCRUB` before it deletes anything. |
+
+A Terminal window opens and runs that file. That is expected, even if the window says fish or zsh. Leave it open until it finishes.
+
+`setup.command` needs Python 3.10 or newer. It looks for `python3.14` down through `python3.10`, then Homebrew's `python3`. It will not use the old system Python (`/usr/bin/python3` on older macOS is 3.9). Get 3.10+ from [python.org/downloads](https://www.python.org/downloads/) or `brew install python@3.12`.
+
+If the private environment has no pip, setup adds it and continues. You do not need to install pip yourself. If it still cannot, delete the `.venv` folder and double-click `setup.command` again.
+
+Ollama is a separate Mac app from [ollama.com/download](https://ollama.com/download). If setup says Ollama is not installed, install that app, open it once, then run `setup.command` again. That second run downloads the models. Apple Silicon uses the Mac's memory as graphics memory. A 16 GB Mac is not told to download `qwen2.5:32b` (about 21 GB). A 24 GB Mac is.
+
+PDFs are made by Microsoft Word for Mac, then by LibreOffice. Without either, the Word files are still written. Setup does not quit Word, so your other documents stay open.
+
+Excel for Mac marks an open workbook with a `~$` file next to it. Close the workbook before a run, the same as on Windows.
+
+If macOS says port 5000 is in use, AirPlay Receiver usually has it. `dashboard.command` picks another port unless you passed `--port`. Windows stays on 5000.
+
 ## 3. Add your resume
 
 Put **one** resume file in the `resume` folder. PDF, Word (.docx), and plain text (.txt) all work.
@@ -255,7 +282,8 @@ and run, for example, `run.bat --skip-scrape`.
 | You see | What to do |
 |---|---|
 | *Python 3.10 or newer was not found* | Install Python from python.org and tick "Add python.exe to PATH". Then run `setup.bat` again. |
-| *Ollama is not installed* | Install it from ollama.com/download, then run `setup.bat` again. |
+| *Ollama is not installed* | Install it from ollama.com/download, then run `setup.bat` again. On a Mac, install the Ollama app, open it once, then run `setup.command` again. |
+| *No module named pip* | On a Mac, run `setup.command` again. It adds pip to the private environment. If it still fails, delete the `.venv` folder and run `setup.command` again. |
 | *Ollama is not running* | Open **Ollama** from the Start menu, then run again. |
 | *The model '…' is not downloaded* | Run `setup.bat` (or `ollama pull <name>` in a command window). |
 | *No resume found* / *Found 2 resumes* | Keep exactly one PDF, DOCX, or TXT in the `resume` folder. |
@@ -301,7 +329,7 @@ your data. `scrub.bat --with-models` also removes the downloaded Ollama models. 
 
 ### For developers
 
-- Tests: `.venv\Scripts\python -m unittest discover tests` (they run offline with a fake Ollama).
+- Tests: `.venv\Scripts\python -m unittest discover tests` on Windows, or `.venv/bin/python -m unittest discover tests` on a Mac (they run offline with a fake Ollama).
 - Add a job source: create one file in `src/scrapers/` with a class that subclasses `Source`,
   sets `key` and `label`, and yields `make_job(...)` from `fetch()`. It's picked up
   automatically. The runner handles keyword and date filtering, de-duplication, and the
