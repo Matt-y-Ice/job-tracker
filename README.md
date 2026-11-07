@@ -18,7 +18,8 @@ simple dashboard to track your applications.
 
 | | |
 |---|---|
-| **Windows 10 or 11** | Mac and Linux work too, but the double-click files are for Windows. |
+| **Windows 10 or 11** | Double-click `setup.bat`. When installing Python, **tick "Add python.exe to PATH"**. |
+| **Mac** | Double-click `Job Tracker.app` or `setup.command`. Python 3.10 or newer from [python.org/downloads](https://www.python.org/downloads/) or Homebrew (`brew install python@3.12`). The system Python on older macOS is too old. Ollama is the Mac app from [ollama.com/download](https://ollama.com/download). |
 | **Python 3.10 or newer** | Free from [python.org/downloads](https://www.python.org/downloads/). When installing, **tick "Add python.exe to PATH"**. |
 | **Ollama** | Free from [ollama.com/download](https://ollama.com/download). It runs the AI model. Install it and keep the defaults. |
 | **About 12 GB of free disk space** | Mostly for the AI model. |
@@ -28,13 +29,17 @@ simple dashboard to track your applications.
 
 1. Unzip the download anywhere, for example to your Desktop.
 2. Install Python and Ollama (links above).
-3. Open the folder and **double-click `setup.bat`**. It will:
+3. Open the folder and **double-click `setup.bat`** (Windows) or **`setup.command`** (Mac). You can also double-click `Job Tracker.app` and choose **Set up**. It will:
    - set up a private Python environment for this project,
    - tell you whether the AI will run on your **GPU** (fast) or **CPU** (slow),
    - download the AI models (about 10 GB, which can take a while).
 
-If setup says Ollama is missing, install it and run `setup.bat` again. Running it again is
+If setup says Ollama is missing, install it and run `setup.bat` (Windows) or `setup.command` (Mac) again. Running it again is
 always safe.
+
+The first time you open `Job Tracker.app` or a `.command` file from a downloaded zip, macOS may
+refuse it. Right-click the file and choose **Open**, then Open again. A git clone does not need
+that. Do not turn off Gatekeeper.
 
 ## 3. Add your resume
 
@@ -47,7 +52,7 @@ Put **one** resume file in the `resume` folder. PDF, Word (.docx), and plain tex
 
 ## 4. Run it
 
-**Double-click `run.bat`.**
+**Double-click `run.bat`.** On a Mac, double-click `run.command`, or open `Job Tracker.app` and choose **Find and rank jobs**.
 
 The first time, it asks a few questions in the window. Press Enter to accept the suggestion in
 [brackets]:
@@ -108,8 +113,8 @@ Every save first makes a backup in `output/backups` (the 10 most recent are kept
 
 ## 6. The dashboard
 
-**Double-click `dashboard.bat`.** It opens <http://localhost:5000> in your browser. Keep the
-black window open while you use it.
+**Double-click `dashboard.bat`.** On a Mac, double-click `dashboard.command`. It opens <http://localhost:5000> in your browser. Keep the
+black window open while you use it. If macOS says port 5000 is in use, AirPlay Receiver is the usual cause; the Mac launcher picks another port (5050–5059) unless you passed `--port`. Windows stays on port 5000.
 
 - Search, filter by status, score, or source, and sort by any column.
 - Change **Status**, **Date Applied**, and **Notes** right in the table. Each change is saved
@@ -131,8 +136,8 @@ reads the posting and your resume and writes both documents, which takes about a
 first one also loads the model). When it's done, the row shows download links:
 
 - **Resume: DOCX · PDF** and **Cover letter: DOCX · PDF**. Use the Word file if you want to edit
-  it, and the PDF to submit. PDFs are made by Microsoft Word; without Word you get the Word files
-  only, and the row says why.
+  it, and the PDF to submit. On Windows, PDFs are made by Microsoft Word; without Word you get the Word files
+  only, and the row says why. On a Mac, PDFs are made by Microsoft Word for Mac, or by LibreOffice if Word is not installed. Without either, the Word files are still written.
 - Files are also saved in `output/documents/<Company>_<Job title>_<id>/`.
 
 **It never makes things up.** The AI may choose what to include, reorder it, and use the
@@ -258,7 +263,9 @@ and run, for example, `run.bat --skip-scrape`.
 | *…is open in Excel. Close the workbook…* | Close the workbook in Excel and run `run.bat --skip-scrape`. |
 | *Could not reach any job site* | Check your internet connection and try again. |
 | *Lever: FAILED (…)* | One site had a problem. The others still ran; it usually works next time. |
-| *Port 5000 is already in use* | The dashboard is probably already open; go to http://localhost:5000. |
+| *Port 5000 is already in use* | The dashboard is probably already open; go to http://localhost:5000. On a Mac, AirPlay Receiver often owns 5000. Double-click `dashboard.command` and it picks another port unless you passed `--port`. |
+| *macOS says the app is from an unidentified developer* | Right-click `Job Tracker.app` or the `.command` file and choose Open. A git clone does not need this. |
+| *Python 3.10 or newer was not found* (Mac) | `/usr/bin/python3` on older macOS is too old. Install Python 3.10+ from python.org or `brew install python@3.12`, then double-click `setup.command` again. |
 | Ranking is very slow | The model is running on the CPU. Switch to `qwen2.5:7b` (section 8), or let it run once overnight; later runs are much faster. |
 | *AI model will run on: GPU+CPU* | The model is bigger than your graphics memory. Use a smaller model for speed. |
 | *No PDF: Microsoft Word is not installed* | The Word (.docx) files are ready. Open them in Word, Google Docs, or LibreOffice and save as PDF. |
@@ -285,7 +292,8 @@ of Git. To strip a copy completely before zipping or pushing it, run **`scrub.ba
 copy. It deletes your resume, settings, skill catalog, job data, workbook, generated documents,
 logs, `.venv`, and Python caches, leaving a fresh download. It asks you to type `SCRUB` first,
 only touches its own folder, and cannot be undone, so **run it on a copy** if you want to keep
-your data. `scrub.bat --with-models` also removes the downloaded Ollama models.
+your data. `scrub.bat --with-models` also removes the downloaded Ollama models. On a Mac, use
+`scrub.command` the same way (`scrub.command --with-models`).
 
 `samples/` has a made-up resume and fake jobs for trying things out.
 
