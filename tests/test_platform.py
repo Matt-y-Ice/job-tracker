@@ -209,6 +209,11 @@ class CommandFileTests(unittest.TestCase):
             self.assertNotIn("rm -rf /", text)
             self.assertNotIn("rm -rf $HOME", text)
 
+    def test_setup_command_bootstraps_pip_when_the_venv_has_none(self):
+        text = (Path(__file__).resolve().parents[1] / "setup.command").read_text(encoding="utf-8")
+        self.assertIn("ensurepip", text)
+        self.assertLess(text.index("ensurepip"), text.index("-m pip install"))
+
     def test_scrub_command_requires_typed_word_and_stays_in_repo(self):
         root = Path(__file__).resolve().parents[1]
         text = (root / "scrub.command").read_text(encoding="utf-8")

@@ -31,6 +31,14 @@ if [ ! -x .venv/bin/python ]; then
 else
   echo "[2/4] Virtual environment already exists."
 fi
+if ! .venv/bin/python -m pip --version >/dev/null 2>&1; then
+  echo "      This environment has no pip (a uv-created .venv does this). Bootstrapping it ..."
+  if ! .venv/bin/python -m ensurepip --upgrade; then
+    echo "[X] Could not add pip to .venv."
+    echo "    Delete the .venv folder and run setup.command again."
+    exit 1
+  fi
+fi
 echo "[3/4] Installing Python packages ..."
 .venv/bin/python -m pip install --upgrade pip --quiet --disable-pip-version-check
 .venv/bin/python -m pip install -r requirements.txt --quiet --disable-pip-version-check || {
