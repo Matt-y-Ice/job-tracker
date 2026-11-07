@@ -6,6 +6,7 @@ real headings and bullets, no tables, text boxes, or images.
 import json
 import logging
 import re
+import shutil
 import subprocess
 import sys
 from datetime import date, datetime
@@ -27,6 +28,7 @@ DOCS_DIR = OUTPUT_DIR / "documents"
 NAVY = RGBColor(0x1F, 0x38, 0x64)
 FONT = "Calibri"
 PDF_SCRIPT = Path(__file__).resolve().parent / "docx_to_pdf.ps1"
+APPLE_SCRIPT = Path(__file__).resolve().parent / "docx_to_pdf.applescript"
 
 
 def safe_name(text: str, limit: int = 40) -> str:
@@ -162,9 +164,17 @@ class PdfUnavailable(Exception):
 
 
 def to_pdf(docx_files: list[Path], timeout: int = 180) -> list[Path]:
+    """Convert docx files to PDF. Windows uses Word. Mac tries Word, then LibreOffice."""
+    if sys.platform == "win32":
+        return _pdf_windows(docx_files, timeout)
+    if sys.platform == "darwin":
+        return _pdf_macos(docx_files, timeout)
+    raise PdfUnavailable("PDF needs Microsoft Word on Windows, or Word or LibreOffice on Mac. "
+                         "The Word files are ready.")
+
+
+def _pdf_windows(docx_files: list[Path], timeout: int) -> list[Path]:
     """Convert with the installed Microsoft Word (one Word session for all files)."""
-    if sys.platform != "win32":
-        raise PdfUnavailable("PDF needs Microsoft Word on Windows. The Word files are ready.")
     pdfs = [f.with_suffix(".pdf") for f in docx_files]
     args = [item for pair in zip(docx_files, pdfs) for item in map(str, pair)]
     try:
@@ -179,6 +189,53 @@ def to_pdf(docx_files: list[Path], timeout: int = 180) -> list[Path]:
         log.warning("PDF conversion failed: %s %s", result.stdout[-500:], result.stderr[-500:])
         reason = "Microsoft Word is not installed" if "WORD_MISSING" in result.stdout else "Word could not convert them"
         raise PdfUnavailable(f"No PDF: {reason}. The Word files are ready.")
+    return pdfs
+
+
+def _pdf_macos(docx_files: list[Path], timeout: int) -> list[Path]:
+    try:
+        return _pdf_via_word_mac(docx_files, timeout)
+    except PdfUnavailable:
+        return _pdf_via_libreoffice(docx_files, timeout)
+
+
+def _pdf_via_word_mac(docx_files: list[Path], timeout: int) -> list[Path]:
+    """Ask the user's Word for Mac to save PDFs. Does not quit Word."""
+    pdfs = [f.with_suffix(".pdf") for f in docx_files]
+    args = [item for pair in zip(docx_files, pdfs) for item in map(str, pair)]
+    try:
+        result = subprocess.run(["osascript", str(APPLE_SCRIPT), *args],
+                                capture_output=True, text=True, timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise PdfUnavailable(f"Word did not finish the PDF ({exc.__class__.__name__}). The Word files are ready.") from exc
+    blob = f"{result.stdout}\n{result.stderr}"
+    if "WORD_MISSING" in blob or result.returncode != 0:
+        raise PdfUnavailable("No PDF: Microsoft Word is not installed. The Word files are ready.")
+    missing = [p for p in pdfs if not p.exists()]
+    if missing:
+        raise PdfUnavailable("No PDF: Microsoft Word is not installed. The Word files are ready.")
+    return pdfs
+
+
+def _pdf_via_libreoffice(docx_files: list[Path], timeout: int) -> list[Path]:
+    soffice = shutil.which("soffice")
+    if not soffice:
+        for candidate in (Path("/Applications/LibreOffice.app/Contents/MacOS/soffice"),):
+            if candidate.exists():
+                soffice = str(candidate)
+                break
+    if not soffice:
+        raise PdfUnavailable("No PDF: Word and LibreOffice are not installed. The Word files are ready.")
+    pdfs = []
+    for docx in docx_files:
+        result = subprocess.run(
+            [soffice, "--headless", "--convert-to", "pdf", "--outdir", str(docx.parent), str(docx)],
+            capture_output=True, text=True, timeout=timeout,
+        )
+        pdf = docx.with_suffix(".pdf")
+        if result.returncode != 0 or not pdf.exists():
+            raise PdfUnavailable("No PDF: LibreOffice could not convert them. The Word files are ready.")
+        pdfs.append(pdf)
     return pdfs
 
 
