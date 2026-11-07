@@ -1,0 +1,11 @@
+#!/bin/bash
+ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
+choice=$(osascript -e 'choose from list {"Set up", "Find and rank jobs", "Open dashboard", "Reset this copy"} with title "Job Tracker" with prompt "What do you want to do?" default items {"Open dashboard"}' 2>/dev/null) || exit 0
+[ "$choice" = "false" ] && exit 0
+case "$choice" in
+  "Set up") open "$ROOT/setup.command" ;;
+  "Find and rank jobs") open "$ROOT/run.command" ;;
+  "Open dashboard") open "$ROOT/dashboard.command" ;;
+  "Reset this copy") open "$ROOT/scrub.command" ;;
+  *) exit 0 ;;
+esac
