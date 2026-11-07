@@ -9,6 +9,7 @@ from typing import Callable
 
 from .config import load_json, save_json
 from .paths import PREFERENCES_FILE
+from .platform_text import run_hint
 
 Ask = Callable[[str], str]
 
@@ -248,7 +249,7 @@ def load_or_ask(ask: Ask = input, interactive: bool | None = None, reset: bool =
         return prefs, "saved"
     if not saved and not interactive:
         raise QuestionnaireAborted(
-            "No saved preferences yet. Double-click run.bat once and answer the questions; "
+            f"No saved preferences yet. Double-click {run_hint()} once and answer the questions; "
             "after that, runs without a keyboard (like the dashboard's Refresh button) work too.")
 
     if saved:

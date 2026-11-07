@@ -28,7 +28,8 @@ def main() -> int:
         return 1
     if not in_project_venv():
         if not VENV_PYTHON.exists():
-            print("The project is not set up yet. Double-click setup.bat first.")
+            launcher = "setup.bat" if os.name == "nt" else ("setup.command" if sys.platform == "darwin" else "setup")
+            print(f"The project is not set up yet. Double-click {launcher} first.")
             return 1
         # Started with another Python (e.g. "python run.py"): rerun with the project's packages.
         return subprocess.call([str(VENV_PYTHON), str(Path(__file__).resolve()), *sys.argv[1:]])

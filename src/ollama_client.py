@@ -7,6 +7,8 @@ import logging
 
 import requests
 
+from .platform_text import ollama_not_running, setup_hint
+
 log = logging.getLogger("jobtracker.ollama")
 
 
@@ -25,14 +27,13 @@ class Ollama:
         try:
             resp = self.session.post(f"{self.host}{path}", json=payload, timeout=self.timeout)
         except requests.ConnectionError as exc:
-            raise OllamaError("Ollama is not running. Open the Ollama app from the Start menu "
-                              "(or run 'ollama serve'), then try again.") from exc
+            raise OllamaError(ollama_not_running()) from exc
         except requests.Timeout as exc:
             raise OllamaError(f"Ollama took longer than {self.timeout:.0f}s to answer. "
                               f"The model may be too large for this computer.") from exc
         if resp.status_code == 404 and "not found" in resp.text:
             model = payload.get("model", "")
-            raise OllamaError(f"The model '{model}' is not downloaded. Run setup.bat, "
+            raise OllamaError(f"The model '{model}' is not downloaded. Run {setup_hint()}, "
                               f"or run:  ollama pull {model}")
         if resp.status_code != 200:
             raise OllamaError(f"Ollama returned HTTP {resp.status_code}: {resp.text[:200]}")
@@ -43,12 +44,11 @@ class Ollama:
         try:
             tags = self.session.get(f"{self.host}/api/tags", timeout=10).json()
         except requests.RequestException as exc:
-            raise OllamaError("Ollama is not running. Open the Ollama app from the Start menu "
-                              "(or run 'ollama serve'), then try again.") from exc
+            raise OllamaError(ollama_not_running()) from exc
         have = {m["name"] for m in tags.get("models", [])}
         for model in models:
             if model not in have and f"{model}:latest" not in have:
-                raise OllamaError(f"The model '{model}' is not downloaded. Run setup.bat, "
+                raise OllamaError(f"The model '{model}' is not downloaded. Run {setup_hint()}, "
                                   f"or run:  ollama pull {model}")
 
     def chat_json(self, model: str, messages: list[dict], schema: dict, options: dict,

@@ -21,6 +21,7 @@ from ..catalog.builder import contributed_wording
 from ..config import load_json, load_models
 from ..ollama_client import Ollama, OllamaError
 from ..paths import DATA_DIR, PREFERENCES_FILE
+from ..platform_text import setup_hint
 from ..questionnaire import with_defaults
 from ..resume_parser import DATE_RANGE, EXPERIENCE_WORDS, ResumeInfo, split_sections
 from ..skills_vocab import find_skills
@@ -595,7 +596,7 @@ def generate(job: dict, resume: ResumeInfo, prefs: dict | None = None, ollama: O
             raise
         ollama.check(models["llm"]["model"])  # the ranking model is always there after setup
         fallback_note = (f"Written with {models['llm']['model']} because {settings['model']} is not downloaded. "
-                         f"For better writing, run setup.bat or: ollama pull {settings['model']}")
+                         f"For better writing, run {setup_hint()} or: ollama pull {settings['model']}")
         settings = {**settings, "model": models["llm"]["model"]}
     options = {"temperature": float(settings["temperature"]), "seed": 7, "num_ctx": int(settings["num_ctx"])}
     limit = int(settings["max_description_chars"])

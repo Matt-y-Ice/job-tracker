@@ -21,6 +21,7 @@ from .excel_builder import OUTPUT_FILE, TOP, LOW, UNSURE, EXCLUDED, WorkbookLock
 from .log import setup_logging
 from .ollama_client import OllamaError
 from .paths import PREFERENCES_FILE, ROOT
+from .platform_text import dashboard_hint
 from .questionnaire import QuestionnaireAborted, has_console, load_or_ask, with_defaults
 from .resume_parser import ResumeError, parse_resume, summary_line as resume_line
 from .scrapers.base import SourceError
@@ -178,7 +179,7 @@ def run(opts: Options, report: Report = print) -> int:
             report(f"{INDENT}{state[NOTES[n]]}")
     out = opts.workbook or OUTPUT_FILE
     report(f"Done in {elapsed(time.monotonic() - started)}. Open {relative(out)}, "
-           f"or double-click dashboard.bat to track your applications.")
+           f"or {dashboard_hint()} to track your applications.")
     log.info("Run finished in %.0fs", time.monotonic() - started)
     return 0
 
