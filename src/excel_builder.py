@@ -464,6 +464,10 @@ def save(wb, path: Path) -> Path | None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(f"~tmp_{path.name}")
     wb.save(tmp)
+    if sys.platform == "darwin" and path.with_name(f"~${path.name}").exists():
+        tmp.unlink(missing_ok=True)
+        raise WorkbookLocked(f"{path.name} is open in Excel. Close the workbook in Excel and "
+                             f"run again to save the new rankings.")
     try:
         if path.exists():
             with open(path, "r+b"):  # fails while Excel has the file open
